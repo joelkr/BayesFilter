@@ -33,32 +33,23 @@ rm(tr)
 #  *Open email
 
 # Extract sample of emails
-n = 2
+# Need to figure out why this does not output probabilities
+n = 10 # Number of emails in trial directory
 email_list <- sampleEmails(n, data_path)
 
+xr <- list()
+
 # Work down email_list
-for(fp in email_list[["files"]]) {
+#for(fp in email_list[["files"]]) {
+for(i in 1:length(email_list$files)) {
+  fp <- email_list$files[i]  
 
-#  *Remove punctuation
-#  *Parse into words
-#    + These should be pulled into a function
-#  *Set 1 in vector to represent word found
-#    + Will need to deal with words not in dictionary eventually
-
-# Will need to load dictionary with words passed out of this function
-# eventually.
-  #print(fp)
 
   # No denominator here, just flipping 0's to 1's for words found in email.
   # Need to use a consistent stop_words list to be sure the counts are the same.
   # Save into the dictionary rdata file.
-  xr <- loadEmailDF(fp, SpamDictionary, stop_words)
+  xr[[i]] <- loadEmailDF(fp, SpamDictionary, stop_words)
 
-# Alter dictionary. Dictionary does not have to be list, might be dataframe.
-#  Word|spam count|ham count|learned(either 1 or 0)
-# learned is 0 if in training set 1 if not. Word is added to spam count
-# if email is found to be spam on other words, or ham count if not.
-# New words are appended to dictionary.
 
   # xr is vector for this individual email, now need to do Bayes using it
   # and our pre-calculated values above.
@@ -68,8 +59,8 @@ for(fp in email_list[["files"]]) {
 
   # Numbers are too big or too small when run through exp() to be 
   # probabilities.
-  log_word_spam <- (t(xr) %*% w$spam + w0$spam)[1,1]
-  log_word_ham <- (t(xr) %*% w$ham + w0$ham)[1,1]
+  log_word_spam <- (t(xr[[i]]) %*% w$spam + w0$spam)[1,1]
+  log_word_ham <- (t(xr[[i]]) %*% w$ham + w0$ham)[1,1]
   log_spam <- log(Pspam)
   log_ham <- log(Pham)
 
@@ -86,8 +77,8 @@ for(fp in email_list[["files"]]) {
   cat("p(spam|word):", p_spam_word, "\n")
   cat("+++++++++++++++++++\n")
   cat("Try another way....\n")
-  pxs <- pxGivenC(thetaSpam, xr)
-  pxh <- pxGivenC(thetaHam, xr)
+  pxs <- pxGivenC(thetaSpam, xr[[i]])
+  pxh <- pxGivenC(thetaHam, xr[[i]])
   pspam_given_x <- pxs * Pspam / (pxs * Pspam + pxh * Pham)
   cat("p(x|s): ", pxs, "\n")
   cat("p(x|h): ", pxh, "\n")
@@ -99,3 +90,8 @@ for(fp in email_list[["files"]]) {
 
 }
 
+# Try summing probabilities. Some way or other this should sum to 1.
+p <- rep(0, length(thetaSpam))
+for(i in 1:length(email_list$c)) {
+  p <- p + thetaSpam * xr[[i]] * email_list$c[i]
+}
