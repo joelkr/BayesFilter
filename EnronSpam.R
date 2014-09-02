@@ -1,9 +1,18 @@
 # This will work with the dataframe version of the dictionary
 # Load dataframe dictionary
-load("spamDictionaryDF.Rdata")
+data_path <- '../../doing_data_science/datasets/enron1/trial'
+save_path <- '../../doing_data_science/BayesSpamFilter/git'
+file_path <- '../../doing_data_science/BayesSpamFilter/git'
+
+filename <- paste(file_path, "spamDictionaryDF.Rdata", sep="/")
+load(filename)
 
 # Load functions
-source("EnronSpamFunctions02.R")
+source("EnronSpamFunctions.R")
+
+# Calculate Pspam and Pham
+Pspam <- Nspam/(Nspam + Nham)
+Pham <- (1 - Pspam)
 
 ## Create vector of probabilities of a word being in a spam email
 w <- list()
@@ -25,7 +34,7 @@ rm(tr)
 
 # Extract sample of emails
 n = 2
-email_list <- sampleEmails(n)
+email_list <- sampleEmails(n, data_path)
 
 # Work down email_list
 for(fp in email_list[["files"]]) {

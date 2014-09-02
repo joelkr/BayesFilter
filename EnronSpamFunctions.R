@@ -28,7 +28,7 @@ loadEmail <- function(fp, dict_words, stop_words) {
   return(x)
 }
 
-loadEmailDF <- function(fp, SpamDictionar, stop_words) {
+loadEmailDF <- function(fp, SpamDictionary, stop_words) {
   # Names are first column of dataframe. Right now they are a factor.
   email_words <- as.character(SpamDictionary$email_words)
   x <- rep(0, length(email_words))
@@ -59,10 +59,10 @@ removePunct <- function(w,  stop_words) {
 
 # Sample emails: create a random list of emails to test
 # Ratio should be about Nspam/Nham and should be random n emails.
-sampleEmails <- function(n) {
+sampleEmails <- function(n, data_path) {
   # This might be better to pass in so it could be centralized.
   #data_path <- '../datasets/enron1'
-  data_path <- '../../doing_data_science/datasets/enron1/trial'
+  #data_path <- '../../doing_data_science/datasets/enron1/trial'
   spam_path <- paste(data_path, "spam", sep="/")
   spam_files <- list.files(path=spam_path, pattern="*.txt", full.names=T)
   ham_path <- paste(data_path, "ham", sep="/")

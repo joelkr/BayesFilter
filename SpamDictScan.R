@@ -25,7 +25,8 @@ removePunct <- function(w, stop_words) {
 
 #data_path <- '../datasets/enron1'
 data_path <- '../../doing_data_science/datasets/enron1/trial'
-save_path <- '../../doing_data_science/BayesSpamFilter/'
+save_path <- '../../doing_data_science/BayesSpamFilter/git'
+file_path <- '../../doing_data_science/BayesSpamFilter/git'
 WORDCOUNT <- 0
 
 # Get counts for spam and ham
@@ -70,14 +71,16 @@ stop_words <- c('the','and','a','in','on','is','of','subject',
 
 if(file.exists("EnglishDict.Rdata")) {
   print("file present")
-  load("EnglishDict.Rdata")
+  filename <- paste(file_path, "EnglishDict.Rdata", sep="/")
+  load(filename)
   D <- EnglishDict
   english_words <- names(EnglishDict)
   rm(EnglishDict)
  } else {
  print("not present")
 #  # Try building this from a dictionary of the english language
- english_words <- scanFile("./english_wordlist.txt")
+ filename <- paste(file_path, "english_wordlist.txt", sep="/")
+ english_words <- scanFile(filename)
  english_words <- tolower(english_words)
  EnglishDict <- list()
  for(w in english_words) {
