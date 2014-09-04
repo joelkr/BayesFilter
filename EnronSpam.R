@@ -73,17 +73,18 @@ for(i in 1:length(email_list$files)) {
   #        (p(word|spam)p(spam) + p(word|ham)p(ham)))
 
 # Work this through again to be sure you have it right.
-  p_spam_word <- exp( log(1 + exp((log_word_ham+log_ham) - (log_word_spam+log_spam))) )
+  logSpamGivenX <- -( log(1 + exp(log_word_ham + log_ham - log_word_spam - log_spam)) )
+  p_spam_word <- exp(logSpamGivenX)
   cat("p(spam|word):", p_spam_word, "\n")
-  cat("+++++++++++++++++++\n")
-  cat("Try another way....\n")
-  pxs <- pxGivenC(thetaSpam, xr[[i]])
-  pxh <- pxGivenC(thetaHam, xr[[i]])
-  pspam_given_x <- pxs * Pspam / (pxs * Pspam + pxh * Pham)
-  cat("p(x|s): ", pxs, "\n")
-  cat("p(x|h): ", pxh, "\n")
-  cat("pspam_given_x: ", pspam_given_x, "\n")
-  cat("-----------------\n")
+  #cat("+++++++++++++++++++\n")
+  #cat("Try another way....\n")
+  #pxs <- pxGivenC(thetaSpam, xr[[i]])
+  #pxh <- pxGivenC(thetaHam, xr[[i]])
+  #pspam_given_x <- pxs * Pspam / (pxs * Pspam + pxh * Pham)
+  #cat("p(x|s): ", pxs, "\n")
+  #cat("p(x|h): ", pxh, "\n")
+  #cat("pspam_given_x: ", pspam_given_x, "\n")
+  #cat("-----------------\n")
 
   # p(spam) is Pspam from the dictionary script, but I did not save it.
   # p(word) should be (D[["word"]][2])/sum(all counts in D)
