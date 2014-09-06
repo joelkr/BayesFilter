@@ -42,15 +42,21 @@ stop_words <- c('the','and','a','in','on','is','of','subject',
                 'to','at', ""
                )
 # Create vectors to store the counts and words for dictionary data frame.
-filename <- paste(file_path, "english_wordlist.txt", sep="/")
-english_words <- scanFile(filename)
-english_words <- tolower(english_words)
-spam_count <- rep(0, length(english_words))
-ham_count <- rep(0, length(english_words))
-total_count <- rep(0, length(english_words))
-names(spam_count) <- english_words
-names(ham_count) <- english_words
-names(total_count) <- english_words
+#filename <- paste(file_path, "english_wordlist.txt", sep="/")
+#english_words <- scanFile(filename)
+#english_words <- tolower(english_words)
+#spam_count <- rep(0, length(english_words))
+#ham_count <- rep(0, length(english_words))
+#total_count <- rep(0, length(english_words))
+#names(spam_count) <- english_words
+#names(ham_count) <- english_words
+#names(total_count) <- english_words
+
+# Try starting from nothing to see if it is faster.
+english_words <- vector()
+spam_count <- vector()
+ham_count <- vector()
+total_count <- vector()
 
 #if(file.exists("EnglishDict.Rdata")) {
 #  print("file present")
@@ -162,6 +168,13 @@ for(i in 1:length(ham_files)) {
 #  }  
 #}
 
+# Need to alpha sort vectors and purge terms that have less than mincount.
+# Maybe sort max to min use?
+mincount <- 5  # Pass in or set at top eventually
+spam_count <- spam_count[total_count >= mincount]
+ham_count <- ham_count[total_count >= mincount]
+english_words <- english_words[total_count >= mincount]
+total_count <- total_count[total_count >= mincount]
 # create a dataframe from the vectors
 SpamDictionary <- data.frame(english_words, spam_count, ham_count, total_count, stringsAsFactors=FALSE)
 
