@@ -1,4 +1,20 @@
 #
+# Paths for data and file save directories
+#data_path <- '../datasets/enron1'
+data_path <- '../../doing_data_science/datasets/enron1/'
+save_path <- '../../doing_data_science/BayesSpamFilter/git'
+file_path <- '../../doing_data_science/BayesSpamFilter/git'
+
+# List of words to ignore. Add or remove as needed
+stop_words <- c('the','and','a','in','on','is','of','subject',
+                'to','at', ""
+)
+
+# Read file in as individual words.
+scanFile <- function(fp) {
+  words <- scan(fp, character(0), quote="", quiet=T)
+  return(words)
+}
 
 # This function calculates p(x|c) by the initial formula rather than
 # log(p(x|c))
@@ -45,6 +61,7 @@ loadEmailDF <- function(fp, SpamDictionary, stop_words) {
 
 # stop_words might change counts if the list is not the same as used for
 # dictionary creation.
+#removePunct <- function(w,  stop_words, wc) {
 removePunct <- function(w,  stop_words) {
   w <- gsub("[\\W\\d]", " ", w, perl=T)
   w <- tolower(w)
@@ -54,6 +71,8 @@ removePunct <- function(w,  stop_words) {
   w <- w[!(w == "")]
   # Might want to check against stop words list.
   w <- w[!(w %in% stop_words)]
+  # Would need to return list or write to global for word count.
+  # wc <- wc + length(w)
   return(w)
 }
 
