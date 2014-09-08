@@ -46,7 +46,7 @@ loadEmail <- function(fp, dict_words, stop_words) {
 
 loadEmailDF <- function(fp, SpamDictionary, stop_words) {
   # Names are first column of dataframe. Right now they are a factor.
-  email_words <- as.character(SpamDictionary$email_words)
+  email_words <- rownames(SpamDictionary)
   x <- rep(0, length(email_words))
   # Assign names to x
   names(x) <- email_words
@@ -61,7 +61,6 @@ loadEmailDF <- function(fp, SpamDictionary, stop_words) {
 
 # stop_words might change counts if the list is not the same as used for
 # dictionary creation.
-#removePunct <- function(w,  stop_words, wc) {
 removePunct <- function(w,  stop_words) {
   w <- gsub("[\\W\\d]", " ", w, perl=T)
   w <- tolower(w)
@@ -146,7 +145,7 @@ createThetaDF <- function(SpamDictionary, Nclass, class=1) {
   alpha <- 1
   beta <- 2
   class <- class + 1 # First column is the words
-  email_words <- as.character(SpamDictionary$email_words)
+  email_words <- rownames(SpamDictionary)
   theta_c <- rep(0, length(email_words))
   # This should be done with sapply()
   for(i in 1:length(email_words)) {
