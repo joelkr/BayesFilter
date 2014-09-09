@@ -138,12 +138,12 @@ createTheta <- function(D, Nclass, class=1) {
   return(r)
 }
 
-createThetaDF <- function(SpamDictionary, Nclass, class=1) {
+createThetaDF <- function(SpamDictionary, Nclass, class=1, alpha=1, beta=2) {
   # D = list of spam words and counts, Nclass = count of spam or ham emails
   # class = spam 1 or ham 2
   # Need to change dictionary to keep separate counts for each class.
-  alpha <- 1
-  beta <- 2
+  #alpha <- 1
+  #beta <- 2
   class <- class + 1 # First column is the words
   email_words <- rownames(SpamDictionary)
   theta_c <- rep(0, length(email_words))
@@ -181,3 +181,38 @@ loadSetup <- function() {
   return(r)
 }
 
+# Pass in list of emails, dictionary, stop words, w, w0 and output vector
+# of 1's and 0's email is spam = 1. Use to check accuracy and establish
+# optimal values for Laplace smoothing and cutoff.
+spamProb <- function(eml, SpamDictionary, stop_words, w, w0)  {
+  spam_prob <- rep(NA, length(eml))
+  for(i in 1:length(eml)) {
+    fp <- eml[i]  
+    
+    xr <- loadEmailDF(fp, SpamDictionary, stop_words)
+    
+    # p(spam|word) = (p(word|spam)*p(spam))/p(word)
+    # log(p(word|spam) = sum(x * w + w0) from above with x and w being vectors.
+    
+    log_word_spam <- (t(xr) %*% w$spam + w0$spam)[1,1]
+    log_word_ham <- (t(xr) %*% w$ham + w0$ham)[1,1]
+    log_spam <- log(Pspam)
+    log_ham <- log(Pham)
+    
+    #print(fp)
+    #cat("log(p(word|spam)):",log_word_spam, "\n")
+    #cat("log(p(word|ham)):", log_word_ham, "\n")
+    # log identity: log(a + b) = log(a) + log(1 + exp(log(b) - log(a)))
+    # formula being solved:
+    # log(p(spam|word)) = log(p(word|spam)p(spam)/
+    #        (p(word|spam)p(spam) + p(word|ham)p(ham)))
+    
+    # Work this through again to be sure you have it right.
+    logSpamGivenX <- -( log(1 + exp(log_word_ham + log_ham - log_word_spam - log_spam)) )
+    p_spam_word <- exp(logSpamGivenX)
+    #cat("p(spam|word):", p_spam_word, "\n")
+    # Save probability so we can check model
+    spam_prob[i] <- p_spam_word
+  }
+  return(spam_prob)
+}
